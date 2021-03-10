@@ -63,10 +63,12 @@ module ImpressionistController
       query_params.reverse_merge!(
         :controller_name => controller_name,
         :action_name => action_name,
+        :user_type => user_type,
         :user_id => user_id,
         :request_hash => @impressionist_hash,
         :session_hash => session_hash,
         :ip_address => request.remote_ip,
+        :original_url => request.original_url,
         :referrer => request.referer,
         :params => filter.filter(params_hash)
         )
@@ -167,10 +169,19 @@ module ImpressionistController
       request.params.except(:controller, :action, :id)
     end
 
-    #use both @current_user and current_user helper
+    #use all @current_user, current_user and any_logged_in_user helper
+    def user_type
+      user_type = @current_user ? @current_user.class.name : nil rescue nil
+      user_type = current_user ? current_user.class.name : nil rescue nil if user_type.blank?
+      user_type = any_logged_in_user ? any_logged_in_user.class.name : nil rescue nil if user_type.blank?
+      user_type
+    end
+
+    #use all @current_user, current_user and any_logged_in_user helper
     def user_id
       user_id = @current_user ? @current_user.id : nil rescue nil
       user_id = current_user ? current_user.id : nil rescue nil if user_id.blank?
+      user_id = any_logged_in_user ? any_logged_in_user.id : nil rescue nil if user_id.blank?
       user_id
     end
   end

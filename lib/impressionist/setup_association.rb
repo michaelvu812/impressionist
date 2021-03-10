@@ -37,8 +37,10 @@ module Impressionist
                         :action_name,
                         :ip_address,
                         :view_name,
+                        :original_url,
                         :referrer,
                         :message,
+                        :user_type,
                         :user_id,
                         :params)
       end
