@@ -166,7 +166,25 @@ module ImpressionistController
     end
 
     def params_hash
-      request.params.except(:controller, :action, :id)
+      clean_up(request.params.except(:controller, :action, :id).dup)
+    end
+
+    def clean_up(params)
+      return params if params.blank?
+
+      patern = /\Adata:(?<mime>[-\w]+\/[-\w+.]+)?;base64,(?<data>.*)/m
+      params.delete_if do |key, value|
+        if value.is_a?(Hash)
+          clean_up(value)
+          value.blank?
+        elsif value.is_a?(String)
+          value.match(patern).present?
+        elsif value.is_a?(Array)
+          value.delete_if { |element| element.is_a?(String) && element.match(patern).present? }
+          value.blank?
+        end
+      end
+      params
     end
 
     #use all @current_user, current_user and any_logged_in_user helper
