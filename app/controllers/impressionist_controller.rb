@@ -166,7 +166,7 @@ module ImpressionistController
     end
 
     def params_hash
-      clean_up(request.params.except(:controller, :action, :id).dup)
+      clean_up(Hash.new(request.params.except(:controller, :action, :id).dup))
     end
 
     def clean_up(params)
